@@ -1,16 +1,28 @@
 version: '3.3'
 
 services:
+  nginx:
+    image: nginx:alpine
+    container_name: reverse-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - frontend
+      - benchmark
   benchmark:
     build:
       context: benchmark
       dockerfile: Dockerfile
-    ports:
-      - 3000:3000
+    expose:
+      - "3000"
   frontend:
     build:
       context: frontend
       dockerfile: Dockerfile
+    expose:
+      - "3000"
     environment:
-      NEXT_PUBLIC_BACKEND: 'http://localhost:8051/'
+      NEXT_PUBLIC_BACKEND: 'http://nginx/benchmark'
       NEXT_PUBLIC_MAPS_API_KEY: 23Wx5lgtGMfDkfMkCuF1
