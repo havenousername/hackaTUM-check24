@@ -8,6 +8,7 @@ from tqdm import tqdm
 import time
 import os
 import traceback
+from threading import Thread
 
 from dotenv import load_dotenv
 load_dotenv(dotenv_path='.env')
@@ -143,10 +144,16 @@ class CraftsmenRankingResource(Resource):
                 bisect.insort(self.craftsman_dict[postcode], crafts_weight, key=lambda x: -x[1])
 
 
-if __name__ == '__main__':
+
+def load_heavy_models():
+    global apc, asp, gba, crr
     apc = AllPostCodes('dataset/postcode.json')
     asp = AllServiceProviders('dataset/service_provider_profile.json', 'dataset/quality_factor_score.json')
     gba = GraphBasedApproach(asp.service_providers, apc.postcodes)
-
     crr = CraftsmenRankingResource(apc, asp, gba)
+    print("Startup finished.")
+
+
+if __name__ == '__main__':
+    Thread(target=load_heavy_models).start()
     app.run(host="0.0.0.0", port=PORT)
