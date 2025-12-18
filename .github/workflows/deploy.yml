@@ -6,18 +6,25 @@ on:
   push:
     branches:
       - main
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   deploy_image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Log in to Github Container Registry
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push compose images
         run: | 
           docker compose build 
@@ -27,29 +34,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Create deployment directory
-        uses: appleboy/ssh-action@v1
+        uses: tailscale/github-action@v2
         with:
-          host: ${{ secrets.SSH_ADDRESS }}
-          username: ${{ vars.USERNAME }}
-          protocol: tcp6
-          port: 22
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            mkdir -p /home/${{ vars.USERNAME }}/check24
-      - name: Copy to ssh server
-        uses: appleboy/scp-action@v0.1.6
-        with:
-          host: ${{ secrets.SSH_ADDRESS }}
-          username: ${{ vars.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "docker-compose.yml"
-          target: "/home/${{ vars.USERNAME }}/check24/"
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          tags: tag:ci
+      - name: Check tailscale status
+        run: | 
+          tailscale status
+      - name: Create deployment directory
+        run: |
+            tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} \  
+            "mkdir -p /home/${{ vars.USERNAME }}/check24"
+      - name: Copy to compose file to ssh server
+        run: | 
+          rsync -av \
+            -e "tailscale ssh" \ 
+            docker-compose.yml \ 
+            ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:/home/${{ vars.USERNAME }}/check24/
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.SSH_ADDRESS }}
-          username: ${{ vars.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: | 
-            mkdir -p /home/${{ vars.USERNAME }}/check24 && cd /home/${{ vars.USERNAME }}/check24
-            docker compose up -d --build
+        run: |
+          tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
+            set -e
+            mkdir -p /home/${{ vars.USERNAME }}/check24 
+            cd /home/${{ vars.USERNAME }}/check24
+            docker compose pull
+            docker compose up -d
+          EOF
