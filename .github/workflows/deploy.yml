@@ -56,7 +56,7 @@ jobs:
           rsync -av \
             -e "tailscale ssh" \ 
             docker-compose.yml \ 
-            ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:/home/${{ vars.USERNAME }}/check24/
+            ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:~/check24/
       - name: Deploy via SSH
         run: |
           tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
