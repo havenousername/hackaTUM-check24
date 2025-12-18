@@ -49,6 +49,7 @@ jobs:
         run: |
             tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
               set -e
+              echo $HOME
               mkdir -p "$HOME/check24"
             EOF
       - name: Copy to compose file to ssh server
