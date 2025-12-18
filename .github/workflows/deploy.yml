@@ -44,7 +44,7 @@ jobs:
           tags: tag:ci
       - name: Check tailscale status
         run: | 
-          tailscale status
+          tailscale status --json
       - name: Create deployment directory
         run: |
             tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} \  
