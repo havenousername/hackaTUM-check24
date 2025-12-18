@@ -39,7 +39,8 @@ jobs:
         uses: tailscale/github-action@v4
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          audience: ${{ secrets.TS_AUDIENCE }}
+          oauth-client-secret: ${{ secrets.TS_OAUTH_CLIENT_SECRET }}
+#          audience: ${{ secrets.TS_AUDIENCE }}
           tags: tag:ci
       - name: Check tailscale status
         run: | 
