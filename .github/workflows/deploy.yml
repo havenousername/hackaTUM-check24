@@ -31,6 +31,8 @@ jobs:
         with:
           host: ${{ secrets.SSH_ADDRESS }}
           username: ${{ vars.USERNAME }}
+          protocol: tcp6
+          port: 22
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             mkdir -p /home/${{ vars.USERNAME }}/check24
