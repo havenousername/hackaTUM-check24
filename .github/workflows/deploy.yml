@@ -47,8 +47,10 @@ jobs:
           tailscale status --json
       - name: Create deployment directory
         run: |
-            tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} \  
-            "mkdir -p /home/${{ vars.USERNAME }}/check24"
+            tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
+              set -e
+              mkdir -p "$HOME/check24"
+            EOF
       - name: Copy to compose file to ssh server
         run: | 
           rsync -av \
@@ -59,8 +61,8 @@ jobs:
         run: |
           tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
             set -e
-            mkdir -p /home/${{ vars.USERNAME }}/check24 
-            cd /home/${{ vars.USERNAME }}/check24
+            mkdir -p $HOME/check24 
+            cd $HOME/check24
             docker compose pull
             docker compose up -d
           EOF
