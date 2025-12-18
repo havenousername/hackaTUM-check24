@@ -49,6 +49,7 @@ jobs:
         run: |
           REMOTE_HOME=$(tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}'echo $HOME')
           echo "Remote home is: $REMOTE_HOME"
+          echo "REMOTE_HOME=$REMOTE_HOME" >> "$GITHUB_ENV"
       - name: Create deployment directory
         run: |
             tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
@@ -60,7 +61,7 @@ jobs:
           rsync -av \
             -e "tailscale ssh" \ 
             docker-compose.yml \ 
-            ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:~/check24/
+            ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:${{ REMOTE_HOME }}/check24/
       - name: Deploy via SSH
         run: |
           tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
