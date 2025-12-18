@@ -1,0 +1,49 @@
+name: "Deploy to self-hosted server"
+on:
+  pull_request_target:
+    branches:
+      - main
+jobs:
+  deploy_image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Log in to Github Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push compose images
+        run: | 
+          docker compose build 
+          docker compose push
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create deployment directory
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_ADDRESS }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            mkdir -p /home/${{ vars.USERNAME }}/check24
+      - name: Copy to ssh server
+        uses: appleboy/scp-action@v0.1.6
+        with:
+          host: ${{ secrets.SSH_ADDRESS }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "docker-compose.yml"
+          target: "/home/${{ vars.USERNAME }}/check24/"
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_ADDRESS }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: | 
+            mkdir -p /home/${{ vars.USERNAME }}/check24 && cd /home/${{ vars.USERNAME }}/check24
+            docker compose up -d --build
