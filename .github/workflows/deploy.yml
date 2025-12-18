@@ -45,11 +45,14 @@ jobs:
       - name: Check tailscale status
         run: | 
           tailscale status --json
+      - name: Check home directory
+        run: |
+          REMOTE_HOME=$(tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}'echo $HOME')
+          echo "Remote home is: $REMOTE_HOME"
       - name: Create deployment directory
         run: |
             tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
               set -e
-              echo $HOME
               mkdir -p "$HOME/check24"
             EOF
       - name: Copy to compose file to ssh server
