@@ -58,7 +58,7 @@ jobs:
             EOF
       - name: Copy docker-compose via rsync over Tailscale
         run: |
-          rsync -av \
+          rsync \
             -e "tailscale ssh" \
             "$GITHUB_WORKSPACE/docker-compose.yml" \
             ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:~/check24/
