@@ -58,7 +58,7 @@ jobs:
             EOF
       - name: Copy docker-compose via rsync over Tailscale
         run: |
-          scp -o StrictHostKeyChecking=no "$GITHUB_WORKSPACE/docker-compose.yml"  ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:~/check24
+          scp -o StrictHostKeyChecking=no "$GITHUB_WORKSPACE/docker-compose.yaml"  ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:~/check24
       - name: Deploy via SSH
         run: |
           tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
