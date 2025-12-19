@@ -65,7 +65,6 @@ jobs:
             set -e
             mkdir -p $HOME/check24 
             cd $HOME/check24
-            tailscale file get
             docker compose pull
             docker compose up -d
           EOF
