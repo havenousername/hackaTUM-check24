@@ -56,8 +56,12 @@ jobs:
               set -e
               mkdir -p "$HOME/check24"
             EOF
-      - name: Copy docker-compose to remote
-        run: tailscale file cp "$GITHUB_WORKSPACE/docker-compose.yml" "${{ secrets.SSH_ADDRESS }}:"
+      - name: Copy docker-compose via rsync over Tailscale
+        run: |
+          rsync -av \
+            -e "tailscale ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" \
+            "$GITHUB_WORKSPACE/docker-compose.yml" \
+            ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:~/check24/
       - name: Deploy via SSH
         run: |
           tailscale ssh ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }} << 'EOF'
