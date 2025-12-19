@@ -58,8 +58,7 @@ jobs:
             EOF
       - name: Copy docker-compose to remote
         run: |
-          rsync -av \
-            -e "tailscale ssh -- " \
+          tailscale file cp \
             "$GITHUB_WORKSPACE/docker-compose.yml" \
             ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:/home/github_deploy/check24/
       - name: Deploy via SSH
