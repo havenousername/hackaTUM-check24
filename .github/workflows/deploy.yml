@@ -56,11 +56,11 @@ jobs:
               set -e
               mkdir -p "$HOME/check24"
             EOF
-      - name: Copy to compose file to ssh server
-        run: | 
+      - name: Copy docker-compose to remote
+        run: |
           rsync -av \
-            -e "tailscale ssh" \ 
-            $GITHUB_WORKSPACE/docker-compose.yml \ 
+            -e "tailscale ssh" \
+            "$GITHUB_WORKSPACE/docker-compose.yml" \
             ${{ vars.USERNAME }}@${{ secrets.SSH_ADDRESS }}:/home/github_deploy/check24/
       - name: Deploy via SSH
         run: |
