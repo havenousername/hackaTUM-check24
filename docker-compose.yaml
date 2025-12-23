@@ -11,6 +11,12 @@ services:
     depends_on:
       - frontend
       - benchmark
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 256M
   benchmark:
     container_name: benchmark
     image: ghcr.io/havenousername/hackatum-check24-benchmark
@@ -19,12 +25,24 @@ services:
       dockerfile: Dockerfile
     expose:
       - "3000"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 256M
   frontend:
     container_name: frontend
     image: ghcr.io/havenousername/hackatum-check24-frontend
     build:
       context: frontend
       dockerfile: Dockerfile
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 256M
     expose:
       - "3000"
     environment:
