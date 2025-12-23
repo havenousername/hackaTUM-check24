@@ -19,7 +19,7 @@ services:
           memory: 256M
   benchmark:
     container_name: benchmark
-    image: ghcr.io/havenousername/hackatum-check24-benchmark
+    image: ghcr.io/havenousername/hackatum-check24-benchmark:latest
     build:
       context: benchmark
       dockerfile: Dockerfile
@@ -33,7 +33,7 @@ services:
           memory: 256M
   frontend:
     container_name: frontend
-    image: ghcr.io/havenousername/hackatum-check24-frontend
+    image: ghcr.io/havenousername/hackatum-check24-frontend:latest
     build:
       context: frontend
       dockerfile: Dockerfile
