@@ -153,7 +153,7 @@ def load_heavy_models():
     crr = CraftsmenRankingResource(apc, asp, gba)
     print("Startup finished.")
 
+Thread(target=load_heavy_models).start()
 
 if __name__ == '__main__':
-    Thread(target=load_heavy_models).start()
     app.run(host="0.0.0.0", port=PORT)
